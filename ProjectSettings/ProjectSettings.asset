@@ -808,20 +808,21 @@ PlayerSettings:
   il2cppCompilerConfiguration: {}
   il2cppCodeGeneration: {}
   managedStrippingLevel:
-    EmbeddedLinux: 1
-    GameCoreScarlett: 1
-    GameCoreXboxOne: 1
-    Nintendo Switch: 1
-    PS4: 1
-    PS5: 1
-    QNX: 1
-    Stadia: 1
-    VisionOS: 1
-    WebGL: 1
-    Windows Store Apps: 1
-    XboxOne: 1
-    iPhone: 1
-    tvOS: 1
+    EmbeddedLinux: 3
+    GameCoreScarlett: 3
+    GameCoreXboxOne: 3
+    Nintendo Switch: 3
+    PS4: 3
+    PS5: 3
+    QNX: 3
+    Stadia: 3
+    Standalone: 3
+    VisionOS: 3
+    WebGL: 3
+    Windows Store Apps: 3
+    XboxOne: 3
+    iPhone: 3
+    tvOS: 3
   incrementalIl2cppBuild: {}
   suppressCommonWarnings: 1
   allowUnsafeCode: 0
@@ -907,7 +908,7 @@ PlayerSettings:
   hmiLogStartupTiming: 0
   hmiCpuConfiguration: 
   apiCompatibilityLevel: 6
-  activeInputHandler: 0
+  activeInputHandler: 2
   windowsGamepadBackendHint: 0
   cloudProjectId: 34e5da89-fa9d-44be-8170-4f758e45684f
   framebufferDepthMemorylessMode: 0
