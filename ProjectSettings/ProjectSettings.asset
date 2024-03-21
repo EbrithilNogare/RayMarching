@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 26
-  productGUID: 70d99b67412dca545bf65c687a36b883
+  productGUID: c3c9ae8e1fdfc0d4f9cd9b8fd36ed8b0
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -19,8 +19,8 @@ PlayerSettings:
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
   m_ShowUnitySplashScreen: 1
   m_ShowUnitySplashLogo: 1
-  m_SplashScreenOverlayOpacity: 1
-  m_SplashScreenAnimation: 0
+  m_SplashScreenOverlayOpacity: 0.5
+  m_SplashScreenAnimation: 1
   m_SplashScreenLogoStyle: 1
   m_SplashScreenDrawMode: 0
   m_SplashScreenBackgroundAnimationZoom: 1
@@ -39,7 +39,9 @@ PlayerSettings:
     y: 0
     width: 1
     height: 1
-  m_SplashScreenLogos: []
+  m_SplashScreenLogos:
+  - logo: {fileID: 0}
+    duration: 2
   m_VirtualRealitySplashScreen: {fileID: 0}
   m_HolographicTrackingLossScreen: {fileID: 0}
   defaultScreenWidth: 1024
@@ -524,8 +526,7 @@ PlayerSettings:
   openGLRequireES31: 0
   openGLRequireES31AEP: 0
   openGLRequireES32: 0
-  m_TemplateCustomTags:
-    PRODUCT_DESCRIPTION: 
+  m_TemplateCustomTags: {}
   mobileMTRendering:
     Android: 1
     iPhone: 1
@@ -787,7 +788,7 @@ PlayerSettings:
   webGLDebugSymbols: 0
   webGLEmscriptenArgs: 
   webGLModulesDirectory: 
-  webGLTemplate: APPLICATION:PWA
+  webGLTemplate: APPLICATION:Default
   webGLAnalyzeBuildSize: 0
   webGLUseEmbeddedResources: 0
   webGLCompressionFormat: 2
@@ -807,23 +808,23 @@ PlayerSettings:
   platformArchitecture: {}
   scriptingBackend: {}
   il2cppCompilerConfiguration: {}
-  il2cppCodeGeneration: {}
+  il2cppCodeGeneration:
+    WebGL: 0
   managedStrippingLevel:
-    EmbeddedLinux: 3
-    GameCoreScarlett: 3
-    GameCoreXboxOne: 3
-    Nintendo Switch: 3
-    PS4: 3
-    PS5: 3
-    QNX: 3
-    Stadia: 3
-    Standalone: 3
-    VisionOS: 3
-    WebGL: 3
-    Windows Store Apps: 3
-    XboxOne: 3
-    iPhone: 3
-    tvOS: 3
+    EmbeddedLinux: 1
+    GameCoreScarlett: 1
+    GameCoreXboxOne: 1
+    Nintendo Switch: 1
+    PS4: 1
+    PS5: 1
+    QNX: 1
+    Stadia: 1
+    VisionOS: 1
+    WebGL: 1
+    Windows Store Apps: 1
+    XboxOne: 1
+    iPhone: 1
+    tvOS: 1
   incrementalIl2cppBuild: {}
   suppressCommonWarnings: 1
   allowUnsafeCode: 0
@@ -911,10 +912,10 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: 34e5da89-fa9d-44be-8170-4f758e45684f
+  cloudProjectId: 7d90aada-4c1c-440e-8a79-743049e324af
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: RayMarching
+  projectName: RayMarching 2024-03-21_12-21-46
   organizationId: nogare25
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
