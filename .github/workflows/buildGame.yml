@@ -25,8 +25,8 @@ jobs:
           # - StandaloneWindows # Build a Windows standalone
           - StandaloneWindows64 # Build a Windows 64-bit standalone
           # - StandaloneLinux64 # Build a Linux 64-bit standalone
-          # - Android # Build an Android .apk standalone app
-          # - WebGL # WebGL
+          - Android # Build an Android .apk standalone app
+          - WebGL # WebGL
     steps:
       - uses: actions/checkout@v4
         with:
