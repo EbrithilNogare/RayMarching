@@ -3,6 +3,7 @@ Shader "Unlit/RayMarching"
     Properties
     {
         _BufferData ("BufferData", 2D) = "white" {}
+        _CameraPosition ("CameraPosition", Vector) = (0, 0, 0, 0)
     }
     SubShader
     {
@@ -40,11 +41,13 @@ Shader "Unlit/RayMarching"
             }
 
             sampler2D _BufferData;
-            
-            fixed4 frag (v2f i) : SV_Target
+            float4 _CameraPosition;
+
+            float4 frag (v2f i) : SV_Target
             {
-                fixed4 color = tex2D(_BufferData, float2(0 / 8.0, 0 / 512.0));
-                return fixed4(color);
+                float4 color = tex2D(_BufferData, float2(3 / 8.0, 0 / 512.0));
+                // rd = o.vertex - _CameraPosition;
+                return float4(_CameraPosition.x, _CameraPosition.y, _CameraPosition.z, 1.0);
             }
             ENDCG
         }

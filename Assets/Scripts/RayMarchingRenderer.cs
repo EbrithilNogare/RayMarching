@@ -42,6 +42,7 @@ public class RayMarchingRenderer : MonoBehaviour
 
         texture.Apply();
         rayMarchingMaterial.SetTexture("_BufferData", texture);
+        rayMarchingMaterial.SetVector("_CameraPosition", Camera.main.transform.position);
     }
 
     private void LateUpdate()
