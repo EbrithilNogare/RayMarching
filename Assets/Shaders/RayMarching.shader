@@ -2,7 +2,7 @@ Shader "Unlit/RayMarching"
 {
     Properties
     {
-
+        _BufferData ("BufferData", 2D) = "white" {}
     }
     SubShader
     {
@@ -39,9 +39,12 @@ Shader "Unlit/RayMarching"
                 return o;
             }
 
+            sampler2D _BufferData;
+            
             fixed4 frag (v2f i) : SV_Target
             {
-                return fixed4(1, 1, 1, .5);
+                fixed4 color = tex2D(_BufferData, float2(0 / 8.0, 0 / 512.0));
+                return fixed4(color);
             }
             ENDCG
         }
