@@ -85,6 +85,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - HEIGHT: 512
+    - MAXIMUM_TRACE_DISTANCE: 1000
+    - MINIMUM_HIT_DISTANCE: 0.001
+    - NUMBER_OF_STEPS: 8
+    - WIDTH: 8
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Blend: 0
