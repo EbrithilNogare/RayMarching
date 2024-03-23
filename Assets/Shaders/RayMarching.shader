@@ -2,7 +2,11 @@ Shader "Unlit/RayMarching"
 {
     Properties
     {
-        _CameraPosition ("CameraPosition", Vector) = (0, 0, 0, 0)
+        WIDTH ("WIDTH", int) = 8
+        HEIGHT ("HEIGHT", int) = 512
+        NUMBER_OF_STEPS ("NUMBER_OF_STEPS", int) = 8
+        MINIMUM_HIT_DISTANCE ("MINIMUM_HIT_DISTANCE", float) = 0.001
+        MAXIMUM_TRACE_DISTANCE ("MAXIMUM_TRACE_DISTANCE", float) = 1000.0
     }
     SubShader
     {
@@ -40,17 +44,28 @@ Shader "Unlit/RayMarching"
                 o.position = o.vertex;
                 return o;
             }
-
+             
+            /////////////////////////////
+            //                         //
+            //     FRAGMENT SHADER     //
+            //                         //
+            /////////////////////////////
+            
+            int WIDTH;
+            int HEIGHT;
+            int NUMBER_OF_STEPS;
+            float MINIMUM_HIT_DISTANCE;
+            float MAXIMUM_TRACE_DISTANCE;
             StructuredBuffer<float4> _BufferData;
             float4 _CameraPosition;
             
             float DistanceFunction(float3 currentPosition){
                 int i = 0;
                 
-                float3 position = _BufferData[0 + 8*i].xyz;
-                float3 rotation = _BufferData[1 + 8*i].xyz;
-                float3 size = _BufferData[2 + 8*i].xyz;
-                float4 color = _BufferData[3 + 8*i].rgba;
+                float3 position = _BufferData[0 + i * WIDTH].xyz;
+                float3 rotation = _BufferData[1 + i * WIDTH].xyz;
+                float3 size = _BufferData[2 + i * WIDTH].xyz;
+                float4 color = _BufferData[3 + i * WIDTH].rgba;
 
                 return length(currentPosition - position) - size.x;
             }
@@ -58,7 +73,6 @@ Shader "Unlit/RayMarching"
             float4 RayMarch(float3 ro, float3 rd)
             {
                 float total_distance_traveled = 0.0;
-                int NUMBER_OF_STEPS = 8; //32
                 float MINIMUM_HIT_DISTANCE = 0.001;
                 float MAXIMUM_TRACE_DISTANCE = 1000.0;
                 float ClosestAtAll = MAXIMUM_TRACE_DISTANCE;
@@ -92,10 +106,11 @@ Shader "Unlit/RayMarching"
                 //float2 uv = (i.screenPos - _CameraPosition.xy) * 2.0 - 1.0;
                 float3 ro = _CameraPosition.xyz;
                 float3 rd = normalize(i.position - ro);
-                float4 color = _BufferData[3 + 0 * 8];
+                float4 color = _BufferData[3 + 0 * WIDTH];
                 float4 rm = RayMarch(ro, rd);
                 return float4(rm);
             }
+
             ENDCG
         }
     }
