@@ -14,12 +14,14 @@ public class RayMarchingRenderer : MonoBehaviour
     private void Start()
     {
         spheres = new List<Sphere>();
+
         FillBuffer();
     }
 
     private void FillBuffer()
     {
-        var texture = new Texture2D(WIDTH, HEIGHT, TextureFormat.RGBAFloat, false);
+        var texture = new Texture2D(WIDTH, HEIGHT, TextureFormat.RGBAFloat, false, false);
+        texture.filterMode = FilterMode.Point;
 
         for (int i = 0; i < spheres.Count; i++)
         {
@@ -30,6 +32,9 @@ public class RayMarchingRenderer : MonoBehaviour
         }
 
         texture.Apply();
+
+        Debug.Log(texture.GetPixel(0, 0).r);
+
         rayMarchingMaterial.SetTexture("_BufferData", texture);
         rayMarchingMaterial.SetVector("_CameraPosition", Camera.main.transform.position);
     }

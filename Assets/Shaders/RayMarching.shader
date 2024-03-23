@@ -2,8 +2,8 @@ Shader "Unlit/RayMarching"
 {
     Properties
     {
-        WIDTH ("WIDTH", int) = 8
-        HEIGHT ("HEIGHT", int) = 512
+        WIDTH ("WIDTH", float) = 8
+        HEIGHT ("HEIGHT", float) = 512
         NUMBER_OF_STEPS ("NUMBER_OF_STEPS", int) = 8
         MINIMUM_HIT_DISTANCE ("MINIMUM_HIT_DISTANCE", float) = 0.001
         MAXIMUM_TRACE_DISTANCE ("MAXIMUM_TRACE_DISTANCE", float) = 1000.0
@@ -101,11 +101,11 @@ Shader "Unlit/RayMarching"
 
             float4 frag (v2f i) : SV_Target
             {
-                //float3 ro = _CameraPosition.xyz;
-                //float3 rd = normalize(i.position - ro);
-                float4 color = tex2D(_BufferData, float2(0.0 / WIDTH, 0.0 / HEIGHT));
-                //float4 rm = RayMarch(ro, rd);
-                return float4(1,1,1, 0.5);
+                float3 ro = _CameraPosition.xyz;
+                float3 rd = normalize(i.position - ro);
+                float4 color = tex2D(_BufferData, float2(3.0 / WIDTH, 0.0 / HEIGHT));
+                float4 rm = RayMarch(ro, rd);
+                return float4(rm);
             }
 
             ENDCG

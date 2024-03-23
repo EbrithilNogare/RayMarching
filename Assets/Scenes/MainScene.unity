@@ -273,7 +273,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b4ca6c9a30f3f04fa8de174cc6b55ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpheres: 10
   rayMarchingMaterial: {fileID: 2100000, guid: be89baa751404014a9dfff7b197b810d, type: 2}
 --- !u!135 &328150061
 SphereCollider:
