@@ -13,6 +13,7 @@ Shader "Unlit/RayMarching"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma unroll 1
 
             #include "UnityCG.cginc"
 
@@ -44,10 +45,11 @@ Shader "Unlit/RayMarching"
             /////////////////////////////
             
             static const int NUMBER_OF_STEPS = 16;
-            static const float WIDTH = 8;
-            static const float HEIGHT = 512;
-            static const float MINIMUM_HIT_DISTANCE = 0.0001;
-            static const float MAXIMUM_TRACE_DISTANCE = 1000.0;
+            static const int MAX_NUMBER_OF_SPHERES = 16;
+            static const float WIDTH = 4;
+            static const float HEIGHT = 64;
+            static const float MINIMUM_HIT_DISTANCE = 0.001;
+            static const float MAXIMUM_TRACE_DISTANCE = 100.0;
             
             int SpheresCount;
             sampler2D_float _BufferData;
@@ -56,7 +58,7 @@ Shader "Unlit/RayMarching"
             float DistanceFunction(float3 currentPosition){
                 float closestDistance = MAXIMUM_TRACE_DISTANCE;
 
-                [unroll(32)] for (int i = 0; i < SpheresCount; i++){
+                for (int i = 0; i < MAX_NUMBER_OF_SPHERES; i++){
                     float3 position = tex2D(_BufferData, float2(0 / WIDTH, i / HEIGHT)).xyz;
                     float3 rotation = tex2D(_BufferData, float2(1 / WIDTH, i / HEIGHT)).xyz;
                     float3 size = tex2D(_BufferData, float2(2 / WIDTH, i / HEIGHT)).xyz;

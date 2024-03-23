@@ -6,8 +6,8 @@ public class RayMarchingRenderer : MonoBehaviour
 {
     public Material rayMarchingMaterial;
 
-    private const int WIDTH = 8;
-    private const int HEIGHT = 512;
+    private const int WIDTH = 4;
+    private const int HEIGHT = 64;
 
     public List<Sphere> spheres;
 
