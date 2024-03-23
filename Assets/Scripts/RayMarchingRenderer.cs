@@ -6,7 +6,10 @@ public class RayMarchingRenderer : MonoBehaviour
 {
     public int maxSpheres;
     public Material rayMarchingMaterial;
-    RenderTexture textureBuffer;
+    ComputeBuffer textureBuffer;
+
+    private const int WIDTH = 8;
+    private const int HEIGHT = 512;
 
     public List<Sphere> spheres;
 
@@ -20,28 +23,24 @@ public class RayMarchingRenderer : MonoBehaviour
 
     private void InitializeSphereDataTexture()
     {
-        textureBuffer = new RenderTexture(8, 512, 0, RenderTextureFormat.ARGBFloat);
-        textureBuffer.enableRandomWrite = true;
-        textureBuffer.filterMode = FilterMode.Point;
-        textureBuffer.Create();
-
-        rayMarchingMaterial.SetTexture("_BufferData", textureBuffer);
+        int stride = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Vector4));
+        textureBuffer = new ComputeBuffer(WIDTH * HEIGHT, stride, ComputeBufferType.Default);
     }
 
     private void FillBuffer()
     {
-        var texture = new Texture2D(8, 512, TextureFormat.ARGB32, false);
+        Vector4[] buffer = new Vector4[WIDTH * HEIGHT];
 
         for (int i = 0; i < spheres.Count; i++)
         {
-            texture.SetPixel(0, i, new Color(spheres[i].position.x, spheres[i].position.y, spheres[i].position.z));
-            texture.SetPixel(1, i, new Color(spheres[i].rotation.x, spheres[i].rotation.y, spheres[i].rotation.z));
-            texture.SetPixel(2, i, new Color(spheres[i].size.x, spheres[i].size.y, spheres[i].size.z));
-            texture.SetPixel(3, i, new Color(spheres[i].color.x, spheres[i].color.y, spheres[i].color.z, spheres[i].color.w));
+            buffer[0 + i * WIDTH] = new Vector4(spheres[i].position.x, spheres[i].position.y, spheres[i].position.z, 0);
+            buffer[1 + i * WIDTH] = new Vector4(spheres[i].rotation.x, spheres[i].rotation.y, spheres[i].rotation.z, 0);
+            buffer[2 + i * WIDTH] = new Vector4(spheres[i].size.x, spheres[i].size.y, spheres[i].size.z, 0);
+            buffer[3 + i * WIDTH] = new Vector4(spheres[i].color.x, spheres[i].color.y, spheres[i].color.z, spheres[i].color.w);
         }
+        textureBuffer.SetData(buffer);
 
-        texture.Apply();
-        rayMarchingMaterial.SetTexture("_BufferData", texture);
+        rayMarchingMaterial.SetBuffer("_BufferData", textureBuffer);
         rayMarchingMaterial.SetVector("_CameraPosition", Camera.main.transform.position);
     }
 
