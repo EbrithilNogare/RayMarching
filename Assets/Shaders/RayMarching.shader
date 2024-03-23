@@ -46,7 +46,7 @@ Shader "Unlit/RayMarching"
             static const int NUMBER_OF_STEPS = 16;
             static const float WIDTH = 8;
             static const float HEIGHT = 512;
-            static const float MINIMUM_HIT_DISTANCE = 0.001;
+            static const float MINIMUM_HIT_DISTANCE = 0.0001;
             static const float MAXIMUM_TRACE_DISTANCE = 1000.0;
             
             int SpheresCount;
