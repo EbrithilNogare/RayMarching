@@ -33,10 +33,9 @@ public class RayMarchingRenderer : MonoBehaviour
 
         texture.Apply();
 
-        Debug.Log(texture.GetPixel(0, 0).r);
-
         rayMarchingMaterial.SetTexture("_BufferData", texture);
         rayMarchingMaterial.SetVector("_CameraPosition", Camera.main.transform.position);
+        rayMarchingMaterial.SetInt("SpheresCount", spheres.Count);
     }
 
     private void LateUpdate()

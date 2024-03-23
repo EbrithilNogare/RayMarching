@@ -1,13 +1,5 @@
 Shader "Unlit/RayMarching"
 {
-    Properties
-    {
-        WIDTH ("WIDTH", float) = 8
-        HEIGHT ("HEIGHT", float) = 512
-        NUMBER_OF_STEPS ("NUMBER_OF_STEPS", int) = 8
-        MINIMUM_HIT_DISTANCE ("MINIMUM_HIT_DISTANCE", float) = 0.001
-        MAXIMUM_TRACE_DISTANCE ("MAXIMUM_TRACE_DISTANCE", float) = 1000.0
-    }
     SubShader
     {
         Tags { "Queue"="Transparent" "RenderType"="Transparent" }
@@ -51,23 +43,30 @@ Shader "Unlit/RayMarching"
             //                         //
             /////////////////////////////
             
-            float WIDTH;
-            float HEIGHT;
-            int NUMBER_OF_STEPS;
-            float MINIMUM_HIT_DISTANCE;
-            float MAXIMUM_TRACE_DISTANCE;
+            static const int NUMBER_OF_STEPS = 16;
+            static const float WIDTH = 8;
+            static const float HEIGHT = 512;
+            static const float MINIMUM_HIT_DISTANCE = 0.001;
+            static const float MAXIMUM_TRACE_DISTANCE = 1000.0;
+            
+            int SpheresCount;
             sampler2D_float _BufferData;
             float4 _CameraPosition;
             
             float DistanceFunction(float3 currentPosition){
-                int i = 0;
-                
-                float3 position = tex2D(_BufferData, float2(0 / WIDTH, i / HEIGHT)).xyz;
-                float3 rotation = tex2D(_BufferData, float2(1 / WIDTH, i / HEIGHT)).xyz;
-                float3 size = tex2D(_BufferData, float2(2 / WIDTH, i / HEIGHT)).xyz;
-                float4 color = tex2D(_BufferData, float2(3 / WIDTH, i / HEIGHT)).rgba;
+                float closestDistance = MAXIMUM_TRACE_DISTANCE;
 
-                return length(currentPosition - position) - size.x;
+                [unroll(32)] for (int i = 0; i < SpheresCount; i++){
+                    float3 position = tex2D(_BufferData, float2(0 / WIDTH, i / HEIGHT)).xyz;
+                    float3 rotation = tex2D(_BufferData, float2(1 / WIDTH, i / HEIGHT)).xyz;
+                    float3 size = tex2D(_BufferData, float2(2 / WIDTH, i / HEIGHT)).xyz;
+                    float4 color = tex2D(_BufferData, float2(3 / WIDTH, i / HEIGHT)).rgba;
+
+                    float currentDistance = length(currentPosition - position) - size.x;
+                    closestDistance = min(closestDistance, currentDistance);
+                }
+
+                return closestDistance;
             }
 
             float4 RayMarch(float3 ro, float3 rd)
@@ -75,7 +74,7 @@ Shader "Unlit/RayMarching"
                 float total_distance_traveled = 0.0;
                 float ClosestAtAll = MAXIMUM_TRACE_DISTANCE;
 
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < NUMBER_OF_STEPS; i++)
                 {
                     float3 currentPosition = ro + total_distance_traveled * rd;
 
@@ -97,7 +96,6 @@ Shader "Unlit/RayMarching"
                 }
                 return float4(1, 1, 1, min(1, max(0.1, 1 - ClosestAtAll)));
             }
-
 
             float4 frag (v2f i) : SV_Target
             {
