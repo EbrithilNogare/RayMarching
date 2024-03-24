@@ -1,5 +1,11 @@
 ﻿using UnityEngine;
 
+public enum MathematicalStructType
+{
+    Light,
+    Sphere,
+}
+
 public struct Sphere
 {
     public Vector3 position;

@@ -154,8 +154,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc9630e4c7ddc7540b93d303db6bb509, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  color: {r: 1, g: 0.15686275, b: 0, a: 1}
-  RayMarchingRenderer: {fileID: 328150060}
+  color: {r: 0, g: 1, b: 0.16654897, a: 1}
+  type: 1
+  rayMarchingRenderer: {fileID: 328150060}
 --- !u!135 &40386764
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -194,9 +195,9 @@ Transform:
   m_GameObject: {fileID: 40386762}
   serializedVersion: 2
   m_LocalRotation: {x: 0.008802043, y: 0.008649743, z: 0.008649744, w: 0.99988645}
-  m_LocalPosition: {x: 0.01999998, y: -0.029999971, z: 0.98}
+  m_LocalPosition: {x: -16.14, y: -0.41000038, z: 7.12}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 1, y: 1, z: 1}
@@ -231,8 +232,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc9630e4c7ddc7540b93d303db6bb509, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  color: {r: 1, g: 0.15686275, b: 0, a: 1}
-  RayMarchingRenderer: {fileID: 328150060}
+  color: {r: 0.99941254, g: 1, b: 0, a: 1}
+  type: 1
+  rayMarchingRenderer: {fileID: 328150060}
 --- !u!135 &234335144
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -271,9 +273,9 @@ Transform:
   m_GameObject: {fileID: 234335142}
   serializedVersion: 2
   m_LocalRotation: {x: 0.008802043, y: 0.008649743, z: 0.008649744, w: 0.99988645}
-  m_LocalPosition: {x: -1.74, y: -1.26, z: -1.36}
+  m_LocalPosition: {x: -1.5500001, y: -6.4500003, z: 4.41}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 1, y: 1, z: 1}
@@ -288,6 +290,7 @@ GameObject:
   - component: {fileID: 318545319}
   - component: {fileID: 318545318}
   - component: {fileID: 318545317}
+  - component: {fileID: 318545320}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -325,7 +328,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 318545316}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 10
   m_Type: 2
   m_Shape: 0
@@ -389,12 +392,27 @@ Transform:
   m_GameObject: {fileID: 318545316}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: 0, y: 5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &318545320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318545316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc9630e4c7ddc7540b93d303db6bb509, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: {r: 1, g: 1, b: 1, a: 1}
+  type: 0
+  rayMarchingRenderer: {fileID: 328150060}
 --- !u!1 &328150059
 GameObject:
   m_ObjectHideFlags: 0
@@ -428,6 +446,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rayMarchingMaterial: {fileID: 2100000, guid: be89baa751404014a9dfff7b197b810d, type: 2}
+  lightPosition: {x: 0, y: 0, z: 0, w: 0}
+  lightColor: {x: 0, y: 0, z: 0, w: 0}
 --- !u!135 &328150061
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -550,11 +570,11 @@ Camera:
   m_GameObject: {fileID: 330585543}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
-  m_FOVAxisMode: 0
+  m_FOVAxisMode: 1
   m_Iso: 200
   m_ShutterSpeed: 0.005
   m_Aperture: 16
@@ -585,8 +605,8 @@ Camera:
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
-  m_HDR: 1
-  m_AllowMSAA: 1
+  m_HDR: 0
+  m_AllowMSAA: 0
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
@@ -683,8 +703,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc9630e4c7ddc7540b93d303db6bb509, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  color: {r: 1, g: 0.15686275, b: 0, a: 1}
-  RayMarchingRenderer: {fileID: 328150060}
+  color: {r: 0, g: 0.029681921, b: 1, a: 1}
+  type: 1
+  rayMarchingRenderer: {fileID: 328150060}
 --- !u!135 &716167374
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -723,9 +744,9 @@ Transform:
   m_GameObject: {fileID: 716167372}
   serializedVersion: 2
   m_LocalRotation: {x: 0.008802043, y: 0.008649743, z: 0.008649744, w: 0.99988645}
-  m_LocalPosition: {x: 0.93, y: 0.029999971, z: -1.63}
+  m_LocalPosition: {x: 10.48, y: 0.089999616, z: 4.0699997}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 1, y: 1, z: 1}
@@ -1003,9 +1024,9 @@ Transform:
   m_GameObject: {fileID: 1888609546}
   serializedVersion: 2
   m_LocalRotation: {x: 0.008802043, y: 0.008649743, z: 0.008649744, w: 0.99988645}
-  m_LocalPosition: {x: -3.07, y: 1.16, z: 1.05}
+  m_LocalPosition: {x: 0, y: 0, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 1, y: 1, z: 1}
@@ -1022,7 +1043,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   color: {r: 1, g: 0.15686275, b: 0, a: 1}
-  RayMarchingRenderer: {fileID: 328150060}
+  type: 1
+  rayMarchingRenderer: {fileID: 328150060}
 --- !u!1 &2112909715
 GameObject:
   m_ObjectHideFlags: 0

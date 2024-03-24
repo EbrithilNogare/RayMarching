@@ -25,8 +25,14 @@ Shader "Unlit/RayMarching"
             struct v2f
             {
                 float4 vertex : SV_POSITION;
-                float2 screenPos : TEXCOORD0;
+                float4 screenPos : TEXCOORD0;
                 float3 position : TEXCOORD1;
+            };
+
+            struct ClosestInfo
+            {
+                float distance;
+                float4 color;
             };
 
             v2f vert (appdata v)
@@ -34,7 +40,6 @@ Shader "Unlit/RayMarching"
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.screenPos = ComputeScreenPos(o.vertex);
-                o.position = o.vertex;
                 return o;
             }
              
@@ -44,8 +49,8 @@ Shader "Unlit/RayMarching"
             //                         //
             /////////////////////////////
             
-            static const int NUMBER_OF_STEPS = 16;
-            static const int MAX_NUMBER_OF_SPHERES = 16;
+            static const int NUMBER_OF_STEPS = 32;
+            static const int MAX_NUMBER_OF_SPHERES = 4;
             static const float WIDTH = 4;
             static const float HEIGHT = 64;
             static const float MINIMUM_HIT_DISTANCE = 0.001;
@@ -53,22 +58,27 @@ Shader "Unlit/RayMarching"
             
             int SpheresCount;
             sampler2D_float _BufferData;
-            float4 _CameraPosition;
-            
-            float DistanceFunction(float3 currentPosition){
-                float closestDistance = MAXIMUM_TRACE_DISTANCE;
-
+            float4x4 CameraToWorld;
+            float4x4 _CameraInverseProjection;
+             
+            ClosestInfo DistanceFunction(float3 currentPosition){
+                ClosestInfo Ci;
+                Ci.distance = MAXIMUM_TRACE_DISTANCE;
                 for (int i = 0; i < MAX_NUMBER_OF_SPHERES; i++){
                     float3 position = tex2D(_BufferData, float2(0 / WIDTH, i / HEIGHT)).xyz;
                     float3 rotation = tex2D(_BufferData, float2(1 / WIDTH, i / HEIGHT)).xyz;
                     float3 size = tex2D(_BufferData, float2(2 / WIDTH, i / HEIGHT)).xyz;
                     float4 color = tex2D(_BufferData, float2(3 / WIDTH, i / HEIGHT)).rgba;
 
-                    float currentDistance = length(currentPosition - position) - size.x;
-                    closestDistance = min(closestDistance, currentDistance);
+                    float currentDistance = length(currentPosition - position) - size.x / 2.0;
+                    if(Ci.distance > currentDistance)
+                    {
+                        Ci.distance = currentDistance;
+                        Ci.color = color;
+                    }
                 }
 
-                return closestDistance;
+                return Ci;
             }
 
             float4 RayMarch(float3 ro, float3 rd)
@@ -80,11 +90,11 @@ Shader "Unlit/RayMarching"
                 {
                     float3 currentPosition = ro + total_distance_traveled * rd;
 
-                    float distance_to_closest = DistanceFunction(currentPosition);
+                    ClosestInfo distance_and_color_to_closest = DistanceFunction(currentPosition);
 
-                    if (distance_to_closest < MINIMUM_HIT_DISTANCE) 
+                    if (distance_and_color_to_closest.distance < MINIMUM_HIT_DISTANCE) 
                     {
-                        return float4(1, 0, 0, 1);
+                        return distance_and_color_to_closest.color;
                     }
 
                     if (total_distance_traveled > MAXIMUM_TRACE_DISTANCE)
@@ -92,18 +102,21 @@ Shader "Unlit/RayMarching"
                         break;
                     }
 
-                    ClosestAtAll = min(ClosestAtAll, distance_to_closest);
+                    ClosestAtAll = min(ClosestAtAll, distance_and_color_to_closest.distance);
 
-                    total_distance_traveled += distance_to_closest;
+                    total_distance_traveled += distance_and_color_to_closest.distance;
                 }
                 return float4(1, 1, 1, min(1, max(0.1, 1 - ClosestAtAll)));
             }
 
             float4 frag (v2f i) : SV_Target
             {
-                float3 ro = _CameraPosition.xyz;
-                float3 rd = normalize(i.position - ro);
-                float4 color = tex2D(_BufferData, float2(3.0 / WIDTH, 0.0 / HEIGHT));
+                float2 uv = i.screenPos.xy / i.screenPos.w * 2.0 - 1.0;
+                float3 ro = mul(CameraToWorld, float4(0,0,0,1)).xyz;
+                float3 rd = mul(_CameraInverseProjection, float4(uv,0,1)).xyz;
+                rd = mul(CameraToWorld, float4(rd,0)).xyz;
+                rd = normalize(rd);
+
                 float4 rm = RayMarch(ro, rd);
                 return float4(rm);
             }

@@ -10,6 +10,8 @@ public class RayMarchingRenderer : MonoBehaviour
     private const int HEIGHT = 64;
 
     public List<Sphere> spheres;
+    public Vector4 lightPosition;
+    public Vector4 lightColor;
 
     private void Start()
     {
@@ -34,8 +36,11 @@ public class RayMarchingRenderer : MonoBehaviour
         texture.Apply();
 
         rayMarchingMaterial.SetTexture("_BufferData", texture);
-        rayMarchingMaterial.SetVector("_CameraPosition", Camera.main.transform.position);
         rayMarchingMaterial.SetInt("SpheresCount", spheres.Count);
+        rayMarchingMaterial.SetVector("LightPosition", lightPosition);
+        rayMarchingMaterial.SetVector("LightColor", lightColor);
+        rayMarchingMaterial.SetMatrix("CameraToWorld", Camera.main.cameraToWorldMatrix);
+        rayMarchingMaterial.SetMatrix("_CameraInverseProjection", Camera.main.projectionMatrix.inverse);
     }
 
     private void LateUpdate()
