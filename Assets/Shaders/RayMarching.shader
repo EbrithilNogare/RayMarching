@@ -29,12 +29,6 @@ Shader "Unlit/RayMarching"
                 float3 position : TEXCOORD1;
             };
 
-            struct ClosestInfo
-            {
-                float distance;
-                float4 color;
-            };
-
             v2f vert (appdata v)
             {
                 v2f o;
@@ -55,15 +49,22 @@ Shader "Unlit/RayMarching"
             static const float HEIGHT = 64;
             static const float MINIMUM_HIT_DISTANCE = 0.001;
             static const float MAXIMUM_TRACE_DISTANCE = 100.0;
+            static const float SMIN_K = 0.5;
             
             int SpheresCount;
             sampler2D_float _BufferData;
             float4x4 CameraToWorld;
             float4x4 _CameraInverseProjection;
+
+            float4 smin(float distanceA, float dictanceB, float3 colorA, float3 colorB) {
+                float h = saturate(0.5 + 0.5*(distanceA-dictanceB)/SMIN_K);
+                float distance = lerp(distanceA, dictanceB, h) - SMIN_K*h*(1.0-h);
+                float3 color = lerp(colorA, colorB, h);
+                return float4(color, distance);
+            }
              
-            ClosestInfo DistanceFunction(float3 currentPosition){
-                ClosestInfo Ci;
-                Ci.distance = MAXIMUM_TRACE_DISTANCE;
+            float4 DistanceFunction(float3 currentPosition){
+                float4 clocestData = (0,0,0,MAXIMUM_TRACE_DISTANCE);
                 for (int i = 0; i < MAX_NUMBER_OF_SPHERES; i++){
                     float3 position = tex2D(_BufferData, float2(0 / WIDTH, i / HEIGHT)).xyz;
                     float3 rotation = tex2D(_BufferData, float2(1 / WIDTH, i / HEIGHT)).xyz;
@@ -71,14 +72,10 @@ Shader "Unlit/RayMarching"
                     float4 color = tex2D(_BufferData, float2(3 / WIDTH, i / HEIGHT)).rgba;
 
                     float currentDistance = length(currentPosition - position) - size.x / 2.0;
-                    if(Ci.distance > currentDistance)
-                    {
-                        Ci.distance = currentDistance;
-                        Ci.color = color;
-                    }
+                    clocestData = smin(clocestData.w, currentDistance, clocestData.rgb, color);
                 }
 
-                return Ci;
+                return clocestData;
             }
 
             float4 RayMarch(float3 ro, float3 rd)
@@ -90,11 +87,11 @@ Shader "Unlit/RayMarching"
                 {
                     float3 currentPosition = ro + total_distance_traveled * rd;
 
-                    ClosestInfo distance_and_color_to_closest = DistanceFunction(currentPosition);
+                    float4 distance_and_color_to_closest = DistanceFunction(currentPosition);
 
-                    if (distance_and_color_to_closest.distance < MINIMUM_HIT_DISTANCE) 
+                    if (distance_and_color_to_closest.w < MINIMUM_HIT_DISTANCE) 
                     {
-                        return distance_and_color_to_closest.color;
+                        return float4(distance_and_color_to_closest.rgb, 1);
                     }
 
                     if (total_distance_traveled > MAXIMUM_TRACE_DISTANCE)
@@ -102,9 +99,9 @@ Shader "Unlit/RayMarching"
                         break;
                     }
 
-                    ClosestAtAll = min(ClosestAtAll, distance_and_color_to_closest.distance);
+                    ClosestAtAll = min(ClosestAtAll, distance_and_color_to_closest.w);
 
-                    total_distance_traveled += distance_and_color_to_closest.distance;
+                    total_distance_traveled += distance_and_color_to_closest.w;
                 }
                 return float4(1, 1, 1, min(1, max(0.1, 1 - ClosestAtAll)));
             }
