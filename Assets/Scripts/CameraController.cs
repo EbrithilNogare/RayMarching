@@ -3,31 +3,41 @@ using UnityEngine.InputSystem;
 
 public class CameraController : MonoBehaviour
 {
-    public float moveSpeed = 5f;
-    public float sensitivity = 2f;
+    public float moveSpeed;
+    public float sensitivity;
 
     private Vector2 lookInput;
     private Vector2 moveInput;
 
-    void FixedUpdate()
+    void Start()
+    {
+        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    void Update()
     {
         RotateCamera();
         MoveCamera();
     }
 
+    public void OnLook(InputAction.CallbackContext context)
+    {
+        lookInput = context.ReadValue<Vector2>();
+    }
+
+    public void OnMove(InputAction.CallbackContext context)
+    {
+        moveInput = context.ReadValue<Vector2>();
+    }
+
     void RotateCamera()
     {
-        lookInput = Mouse.current.delta.ReadValue() * sensitivity * Time.deltaTime;
-        transform.Rotate(Vector3.up * lookInput.x);
-        transform.Rotate(Vector3.left * lookInput.y);
+        transform.Rotate(Vector3.up * lookInput.x * sensitivity * Time.deltaTime);
+        transform.Rotate(Vector3.left * lookInput.y * sensitivity * Time.deltaTime);
     }
 
     void MoveCamera()
     {
-        moveInput = new Vector2(
-            (Keyboard.current.dKey.isPressed ? 1 : 0) - (Keyboard.current.aKey.isPressed ? 1 : 0),
-            (Keyboard.current.wKey.isPressed ? 1 : 0) - (Keyboard.current.sKey.isPressed ? 1 : 0)
-        );
         moveInput.Normalize();
         Vector3 moveDirection = transform.right * moveInput.x + transform.forward * moveInput.y;
         transform.position += moveDirection * moveSpeed * Time.deltaTime;
