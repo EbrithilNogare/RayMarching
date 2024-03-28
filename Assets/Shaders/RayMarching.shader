@@ -81,13 +81,14 @@ Shader "Unlit/RayMarching"
             float4 RayMarch(float3 ro, float3 rd)
             {
                 float total_distance_traveled = 0.0;
-                float ClosestAtAll = MAXIMUM_TRACE_DISTANCE;
+                float4 ClosestAtAll = MAXIMUM_TRACE_DISTANCE;
+                float4 distance_and_color_to_closest;
 
                 for (int i = 0; i < NUMBER_OF_STEPS; i++)
                 {
                     float3 currentPosition = ro + total_distance_traveled * rd;
 
-                    float4 distance_and_color_to_closest = DistanceFunction(currentPosition);
+                    distance_and_color_to_closest = DistanceFunction(currentPosition);
 
                     if (distance_and_color_to_closest.w < MINIMUM_HIT_DISTANCE) 
                     {
@@ -96,14 +97,15 @@ Shader "Unlit/RayMarching"
 
                     if (total_distance_traveled > MAXIMUM_TRACE_DISTANCE)
                     {
-                        break;
+                        return float4(0,0,0,0);
                     }
 
-                    ClosestAtAll = min(ClosestAtAll, distance_and_color_to_closest.w);
+                    if(ClosestAtAll.w > distance_and_color_to_closest.w)
+                        ClosestAtAll = distance_and_color_to_closest;
 
                     total_distance_traveled += distance_and_color_to_closest.w;
                 }
-                return float4(1, 1, 1, min(1, max(0.1, 1 - ClosestAtAll)));
+                return float4(ClosestAtAll.rgb, min(1, max(0.1, 1 - ClosestAtAll.w)));
             }
 
             float4 frag (v2f i) : SV_Target
