@@ -2,7 +2,7 @@ Shader "Unlit/RayMarching"
 {
     SubShader
     {
-        Tags { "Queue" = "Geometry-1900" "RenderType" = "Transparent" }
+        Tags { "Queue" = "Geometry-10" "RenderType" = "Transparent" }
         ZWrite On
         Blend SrcAlpha OneMinusSrcAlpha
         Cull front 
@@ -60,6 +60,7 @@ Shader "Unlit/RayMarching"
             sampler2D_float _BufferData;
             float4x4 CameraToWorld;
             float4x4 _CameraInverseProjection;
+            float nearClipPlane;
 
             float4 smin(float distanceA, float dictanceB, float3 colorA, float3 colorB) {
                 float h = saturate(0.5 + 0.5*(distanceA-dictanceB)/SMIN_K);
@@ -123,18 +124,20 @@ Shader "Unlit/RayMarching"
                 rd = normalize(rd);
 
                 float4 rm = RayMarch(ro, rd);
-                
+
+                const float flip = -1;
                 float linearDepth = max(rm.w, MINIMUM_HIT_DISTANCE) * 2.0 - 1.0;
-                float nonLinearDepth = 2 * _ProjectionParams.x * _ProjectionParams.y / (_ProjectionParams.x + _ProjectionParams .y - (_ProjectionParams.y - _ProjectionParams.x) * linearDepth);
+                float nonLinearDepth = 2 * flip * nearClipPlane / (flip + nearClipPlane - (nearClipPlane - flip) * linearDepth);
+
                 // todo make depth count with fish eye effect
                 output.color = float4(rm.rgb, rm.w == MAXIMUM_TRACE_DISTANCE? 0.2 : 1.0);
                 
                 #if defined(UNITY_REVERSED_Z)
                 output.depth = nonLinearDepth;
                 #else
-                output.depth = 1-nonLinearDepth;
+                output.depth = 1 - nonLinearDepth;
                 #endif
-                
+
                 return output;
             }
 

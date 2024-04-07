@@ -41,6 +41,7 @@ public class RayMarchingRenderer : MonoBehaviour
         rayMarchingMaterial.SetVector("LightColor", lightColor);
         rayMarchingMaterial.SetMatrix("CameraToWorld", Camera.main.cameraToWorldMatrix);
         rayMarchingMaterial.SetMatrix("_CameraInverseProjection", Camera.main.projectionMatrix.inverse);
+        rayMarchingMaterial.SetFloat("nearClipPlane", Camera.main.nearClipPlane);
     }
 
     private void LateUpdate()
