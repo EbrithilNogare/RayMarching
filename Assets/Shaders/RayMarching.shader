@@ -2,8 +2,8 @@ Shader "Unlit/RayMarching"
 {
     SubShader
     {
-        Tags { "Queue"="Transparent" "RenderType"="Transparent" }
-        ZWrite Off
+        Tags { "Queue" = "Geometry-1900" "RenderType" = "Transparent" }
+        ZWrite On
         Blend SrcAlpha OneMinusSrcAlpha
         Cull front 
         LOD 100
@@ -13,7 +13,6 @@ Shader "Unlit/RayMarching"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #pragma unroll 1
 
             #include "UnityCG.cginc"
 
@@ -31,11 +30,17 @@ Shader "Unlit/RayMarching"
 
             v2f vert (appdata v)
             {
-                v2f o;
+                v2f o = (v2f)0;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.screenPos = ComputeScreenPos(o.vertex);
                 return o;
             }
+
+            struct fragOut
+            {
+                float4 color : SV_Target;
+                float depth : SV_Depth;
+            };
              
             /////////////////////////////
             //                         //
@@ -82,34 +87,35 @@ Shader "Unlit/RayMarching"
             {
                 float total_distance_traveled = 0.0;
                 float4 ClosestAtAll = MAXIMUM_TRACE_DISTANCE;
-                float4 distance_and_color_to_closest;
 
                 for (int i = 0; i < NUMBER_OF_STEPS; i++)
                 {
                     float3 currentPosition = ro + total_distance_traveled * rd;
 
-                    distance_and_color_to_closest = DistanceFunction(currentPosition);
-
-                    if (distance_and_color_to_closest.w < MINIMUM_HIT_DISTANCE) 
-                    {
-                        return float4(distance_and_color_to_closest.rgb, 1);
-                    }
+                    float4 distance_and_color_to_closest = DistanceFunction(currentPosition);
+                    total_distance_traveled += distance_and_color_to_closest.w;
 
                     if (total_distance_traveled > MAXIMUM_TRACE_DISTANCE)
                     {
-                        return float4(0,0,0,0);
+                        return float4(0,0,0,MAXIMUM_TRACE_DISTANCE);
                     }
 
-                    if(ClosestAtAll.w > distance_and_color_to_closest.w)
+                    if(ClosestAtAll.w > distance_and_color_to_closest.w){
                         ClosestAtAll = distance_and_color_to_closest;
-
-                    total_distance_traveled += distance_and_color_to_closest.w;
+                    }
+                    
+                    if (distance_and_color_to_closest.w < MINIMUM_HIT_DISTANCE) 
+                    {
+                        break;
+                    }
                 }
-                return float4(ClosestAtAll.rgb, min(1, max(0.1, 1 - ClosestAtAll.w)));
+                return float4(ClosestAtAll.rgb, total_distance_traveled);
             }
 
-            float4 frag (v2f i) : SV_Target
+            fragOut frag (v2f i)
             {
+                fragOut output = (fragOut)0;
+
                 float2 uv = i.screenPos.xy / i.screenPos.w * 2.0 - 1.0;
                 float3 ro = mul(CameraToWorld, float4(0,0,0,1)).xyz;
                 float3 rd = mul(_CameraInverseProjection, float4(uv,0,1)).xyz;
@@ -117,7 +123,13 @@ Shader "Unlit/RayMarching"
                 rd = normalize(rd);
 
                 float4 rm = RayMarch(ro, rd);
-                return float4(rm);
+                
+                float linearDepth = max(rm.w, MINIMUM_HIT_DISTANCE) * 2.0 - 1.0;
+                float nonLinearDepth = 2 * _ProjectionParams.x * _ProjectionParams.y / (_ProjectionParams.x + _ProjectionParams .y - (_ProjectionParams.y - _ProjectionParams.x) * linearDepth);
+                // todo make depth count with fish eye effect
+                output.color = float4(rm.rgb, rm.w == MAXIMUM_TRACE_DISTANCE? 0.0 : 1.0);
+                output.depth = nonLinearDepth;
+                return output;
             }
 
             ENDCG

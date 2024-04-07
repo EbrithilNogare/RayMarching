@@ -8,7 +8,10 @@ public class RayMarchingObject : MonoBehaviour
 
     void Start()
     {
-
+        if (type != MathematicalStructType.Light)
+        {
+            GetComponent<MeshRenderer>().enabled = false;
+        }
     }
 
     void Update()
