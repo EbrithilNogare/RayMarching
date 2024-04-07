@@ -127,8 +127,14 @@ Shader "Unlit/RayMarching"
                 float linearDepth = max(rm.w, MINIMUM_HIT_DISTANCE) * 2.0 - 1.0;
                 float nonLinearDepth = 2 * _ProjectionParams.x * _ProjectionParams.y / (_ProjectionParams.x + _ProjectionParams .y - (_ProjectionParams.y - _ProjectionParams.x) * linearDepth);
                 // todo make depth count with fish eye effect
-                output.color = float4(rm.rgb, rm.w == MAXIMUM_TRACE_DISTANCE? 0.0 : 1.0);
+                output.color = float4(rm.rgb, rm.w == MAXIMUM_TRACE_DISTANCE? 0.2 : 1.0);
+                
+                #if defined(UNITY_REVERSED_Z)
                 output.depth = nonLinearDepth;
+                #else
+                output.depth = 1-nonLinearDepth;
+                #endif
+                
                 return output;
             }
 
