@@ -50,7 +50,7 @@ Shader "Unlit/RayMarching"
             /////////////////////////////
             
             static const int NUMBER_OF_STEPS = 32;
-            static const int MAX_NUMBER_OF_SPHERES = 4;
+            static const int MAX_NUMBER_OF_SPHERES = 5;
             static const float WIDTH = 4;
             static const float HEIGHT = 64;
             static const float MINIMUM_HIT_DISTANCE = 0.001;
