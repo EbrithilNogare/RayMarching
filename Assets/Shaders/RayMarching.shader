@@ -7,6 +7,7 @@ Shader "Unlit/RayMarching"
         Blend SrcAlpha OneMinusSrcAlpha
         Cull front 
         LOD 100
+        // UNITY_SHADER_NO_UPGRADE 
 
         Pass
         {
@@ -115,27 +116,28 @@ Shader "Unlit/RayMarching"
 
             fragOut frag (v2f i)
             {
-                fragOut output = (fragOut)0;
-
+                // init ray
                 float2 uv = i.screenPos.xy / i.screenPos.w * 2.0 - 1.0;
                 float3 ro = mul(CameraToWorld, float4(0,0,0,1)).xyz;
                 float3 rd = mul(_CameraInverseProjection, float4(uv,0,1)).xyz;
                 rd = mul(CameraToWorld, float4(rd,0)).xyz;
                 rd = normalize(rd);
 
+                // raymarch
                 float4 rm = RayMarch(ro, rd);
 
-                const float flip = -1;
-                float linearDepth = max(rm.w, MINIMUM_HIT_DISTANCE) * 2.0 - 1.0;
-                float nonLinearDepth = 2 * flip * nearClipPlane / (flip + nearClipPlane - (nearClipPlane - flip) * linearDepth);
+                // output color and depth
+                fragOut output = (fragOut)0;
+                
+                output.color = float4(rm.rgb, rm.w == MAXIMUM_TRACE_DISTANCE? 0.0 : 1.0);
 
-                // todo make depth count with fish eye effect
-                output.color = float4(rm.rgb, rm.w == MAXIMUM_TRACE_DISTANCE? 0.2 : 1.0);
+                float4 depth_vec = mul(UNITY_MATRIX_VP, float4(ro + rd * rm.w, 1.0));
+                float depth = depth_vec.z / depth_vec.w;
                 
                 #if defined(UNITY_REVERSED_Z)
-                output.depth = nonLinearDepth;
+                output.depth = depth; // Direct3D
                 #else
-                output.depth = 1 - nonLinearDepth;
+                output.depth = ( depth + 1.0 ) * 0.5; // OpenGL
                 #endif
 
                 return output;
