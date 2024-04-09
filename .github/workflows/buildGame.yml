@@ -67,7 +67,7 @@ jobs:
 
       - name: Write version into package.json for badges to work
         if: matrix.targetPlatform == 'WebGL'
-        run: sudo echo '{ "version":"${{ steps.myBuildStep.outputs.buildVersion }}" }' > ./build/WebGL/${{ github.event.repository.name }}/package.json
+        run: echo '{ "version":"${{ steps.myBuildStep.outputs.buildVersion }}" }' | sudo tee ./build/WebGL/${{ github.event.repository.name }}/package.json
 
       - if: matrix.targetPlatform == 'WebGL'
         uses: JamesIves/github-pages-deploy-action@v4
