@@ -64,6 +64,8 @@ jobs:
           buildName: ${{ github.event.repository.name }}
           versioning: Semantic
           targetPlatform: ${{ matrix.targetPlatform }}
+      
+      - run: find ./build/${{ matrix.targetPlatform }}/${{ github.event.repository.name }} -maxdepth 1 -type d -name "*DoNotShip*" -exec rm -rf {} +
 
       - if: matrix.targetPlatform == 'WebGL'
         run: echo '{ "version":"${{ steps.myBuildStep.outputs.buildVersion }}" }' > ./build/WebGL/${{ github.event.repository.name }}/package.json
