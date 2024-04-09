@@ -33,9 +33,6 @@ jobs:
           fetch-depth: 0
           lfs: false
 
-      - if: matrix.targetPlatform == 'WebGL'
-        run: mkdir -p ./build/WebGL/${{ github.event.repository.name }} && touch ./build/WebGL/${{ github.event.repository.name }}/package.json
-
       - if: matrix.targetPlatform == 'WebGL' ||  matrix.targetPlatform == 'Android' || matrix.targetPlatform == 'StandaloneWindows64'
         uses: actions/cache@v4
         with:
@@ -70,7 +67,7 @@ jobs:
 
       - name: Write version into package.json for badges to work
         if: matrix.targetPlatform == 'WebGL'
-        run: echo '{ "version":"${{ steps.myBuildStep.outputs.buildVersion }}" }' > ./build/WebGL/${{ github.event.repository.name }}/package.json
+        run: sudo echo '{ "version":"${{ steps.myBuildStep.outputs.buildVersion }}" }' > ./build/WebGL/${{ github.event.repository.name }}/package.json
 
       - if: matrix.targetPlatform == 'WebGL'
         uses: JamesIves/github-pages-deploy-action@v4
