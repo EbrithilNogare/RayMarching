@@ -66,7 +66,7 @@ jobs:
           targetPlatform: ${{ matrix.targetPlatform }}
       
       - name: Remove DoNotShip folder
-        run: find ./build/${{ matrix.targetPlatform }}/${{ github.event.repository.name }} -maxdepth 1 -type d -name "*DoNotShip*" -exec rm -rf {} +
+        run: find ./build/${{ matrix.targetPlatform }} -maxdepth 1 -type d -name "*DoNotShip*" -exec rm -rf {} +
 
       - name: Write version into package.json for badges to work
         if: matrix.targetPlatform == 'WebGL'
