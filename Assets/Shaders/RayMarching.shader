@@ -146,7 +146,7 @@ Shader "Unlit/RayMarching"
                 // output color and depth
                 fragOut output = (fragOut)0;
                 
-                output.color = float4(rm.rgb * lerp(lighting, 1.0, 0.2), rm.w == MAXIMUM_TRACE_DISTANCE? 0.0 : 1.0);
+                output.color = float4(rm.rgb * lerp(LightColor * lighting, 1.0, 0.2), rm.w == MAXIMUM_TRACE_DISTANCE? 0.0 : 1.0);
 
                 float4 depth_vec = mul(UNITY_MATRIX_VP, float4(surfacePoint, 1.0));
                 float depth = depth_vec.z / depth_vec.w;

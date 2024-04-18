@@ -10,7 +10,7 @@ public class RayMarchingObject : MonoBehaviour
     {
         if (type != MathematicalStructType.Light)
         {
-            GetComponent<MeshRenderer>().enabled = false;
+            GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
         }
     }
 
@@ -26,7 +26,7 @@ public class RayMarchingObject : MonoBehaviour
     void ConnectLight()
     {
         rayMarchingRenderer.lightPosition = transform.position;
-        rayMarchingRenderer.lightColor = color;
+        rayMarchingRenderer.lightColor = color * GetComponent<Light>().color;
     }
 
     void ConnectSphere()

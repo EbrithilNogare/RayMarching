@@ -9,11 +9,6 @@ public class CameraController : MonoBehaviour
     private Vector2 lookInput;
     private Vector2 moveInput;
 
-    void Start()
-    {
-        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-    }
-
     void Update()
     {
         RotateCamera();
