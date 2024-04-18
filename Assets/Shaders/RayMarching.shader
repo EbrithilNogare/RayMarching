@@ -62,6 +62,8 @@ Shader "Unlit/RayMarching"
             float4x4 CameraToWorld;
             float4x4 _CameraInverseProjection;
             float nearClipPlane;
+            float3 LightPosition;
+            float3 LightColor;
 
             float4 smin(float distanceA, float dictanceB, float3 colorA, float3 colorB) {
                 float h = saturate(0.5 + 0.5*(distanceA-dictanceB)/SMIN_K);
@@ -83,6 +85,13 @@ Shader "Unlit/RayMarching"
                 }
 
                 return clocestData;
+            }
+
+            float3 EstimateNormal(float3 currentPosition){
+                float x = DistanceFunction(float3(currentPosition.x+MINIMUM_HIT_DISTANCE,currentPosition.y,currentPosition.z)).w - DistanceFunction(float3(currentPosition.x-MINIMUM_HIT_DISTANCE,currentPosition.y,currentPosition.z)).w;
+                float y = DistanceFunction(float3(currentPosition.x,currentPosition.y+MINIMUM_HIT_DISTANCE,currentPosition.z)).w - DistanceFunction(float3(currentPosition.x,currentPosition.y-MINIMUM_HIT_DISTANCE,currentPosition.z)).w;
+                float z = DistanceFunction(float3(currentPosition.x,currentPosition.y,currentPosition.z+MINIMUM_HIT_DISTANCE)).w - DistanceFunction(float3(currentPosition.x,currentPosition.y,currentPosition.z-MINIMUM_HIT_DISTANCE)).w;
+                return normalize(float3(x,y,z));
             }
 
             float4 RayMarch(float3 ro, float3 rd)
@@ -125,13 +134,21 @@ Shader "Unlit/RayMarching"
 
                 // raymarch
                 float4 rm = RayMarch(ro, rd);
+                float3 surfacePoint = ro + rm.w * rd;
+
+                //estimate normal
+                float3 normal = EstimateNormal(surfacePoint);
+
+                //light
+                float3 directionToLight = normalize(LightPosition - surfacePoint);
+                float lighting = saturate(dot(normal, directionToLight));
 
                 // output color and depth
                 fragOut output = (fragOut)0;
                 
-                output.color = float4(rm.rgb, rm.w == MAXIMUM_TRACE_DISTANCE? 0.0 : 1.0);
+                output.color = float4(rm.rgb * lerp(lighting, 1.0, 0.2), rm.w == MAXIMUM_TRACE_DISTANCE? 0.0 : 1.0);
 
-                float4 depth_vec = mul(UNITY_MATRIX_VP, float4(ro + rd * rm.w, 1.0));
+                float4 depth_vec = mul(UNITY_MATRIX_VP, float4(surfacePoint, 1.0));
                 float depth = depth_vec.z / depth_vec.w;
                 
                 #if defined(UNITY_REVERSED_Z)
