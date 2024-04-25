@@ -7,7 +7,7 @@ public class RayMarchingRenderer : MonoBehaviour
     public Material rayMarchingMaterial;
 
     private const int WIDTH = 4;
-    private const int HEIGHT = 64;
+    private const int HEIGHT = 16;
 
     public List<Sphere> spheres;
     public Vector4 lightPosition;

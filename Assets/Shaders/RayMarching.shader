@@ -1,5 +1,9 @@
 Shader "Unlit/RayMarching"
 {
+    Properties
+    {
+        [KeywordEnum(FAST, NORMAL, GOOD, BEST)] _STEPS("Overlay mode", Float) = 0
+    }
     SubShader
     {
         Tags { "Queue" = "Geometry-10" "RenderType" = "Transparent" }
@@ -12,6 +16,7 @@ Shader "Unlit/RayMarching"
         Pass
         {
             CGPROGRAM
+            #pragma multi_compile _STEPS_FAST _STEPS_NORMAL _STEPS_GOOD _STEPS_BEST
             #pragma vertex vert
             #pragma fragment frag
 
@@ -26,7 +31,6 @@ Shader "Unlit/RayMarching"
             {
                 float4 vertex : SV_POSITION;
                 float4 screenPos : TEXCOORD0;
-                float3 position : TEXCOORD1;
             };
 
             v2f vert (appdata v)
@@ -42,6 +46,14 @@ Shader "Unlit/RayMarching"
                 float4 color : SV_Target;
                 float depth : SV_Depth;
             };
+
+            struct buferDataFormat
+            {
+                float3 position;
+                float3 rotation;
+                float3 size;
+                float4 color;
+            };
              
             /////////////////////////////
             //                         //
@@ -49,10 +61,21 @@ Shader "Unlit/RayMarching"
             //                         //
             /////////////////////////////
             
+            #ifdef _STEPS_FAST
+            static const int NUMBER_OF_STEPS = 16;
+            #endif
+            #ifdef _STEPS_NORMAL
             static const int NUMBER_OF_STEPS = 32;
+            #endif
+            #ifdef _STEPS_GOOD
+            static const int NUMBER_OF_STEPS = 128;
+            #endif
+            #ifdef _STEPS_BEST
+            static const int NUMBER_OF_STEPS = 512;
+            #endif
             static const int MAX_NUMBER_OF_SPHERES = 5;
             static const float WIDTH = 4;
-            static const float HEIGHT = 64;
+            static const float HEIGHT = 16;
             static const float MINIMUM_HIT_DISTANCE = 0.001;
             static const float MAXIMUM_TRACE_DISTANCE = 100.0;
             static const float SMIN_K = 0.5;
@@ -64,6 +87,8 @@ Shader "Unlit/RayMarching"
             float nearClipPlane;
             float3 LightPosition;
             float3 LightColor;
+            buferDataFormat buferData[MAXIMUM_TRACE_DISTANCE];
+            
 
             float4 smin(float distanceA, float dictanceB, float3 colorA, float3 colorB) {
                 float h = saturate(0.5 + 0.5*(distanceA-dictanceB)/SMIN_K);
@@ -73,12 +98,12 @@ Shader "Unlit/RayMarching"
             }
              
             float4 DistanceFunction(float3 currentPosition){
-                float4 clocestData = (0,0,0,MAXIMUM_TRACE_DISTANCE);
+                float4 clocestData = float4(0, 0, 0, MAXIMUM_TRACE_DISTANCE);
                 for (int i = 0; i < MAX_NUMBER_OF_SPHERES; i++){
-                    float3 position = tex2D(_BufferData, float2(0 / WIDTH, i / HEIGHT)).xyz;
-                    float3 rotation = tex2D(_BufferData, float2(1 / WIDTH, i / HEIGHT)).xyz;
-                    float3 size = tex2D(_BufferData, float2(2 / WIDTH, i / HEIGHT)).xyz;
-                    float4 color = tex2D(_BufferData, float2(3 / WIDTH, i / HEIGHT)).rgba;
+                    float3 position = buferData[i].position;
+                    float3 rotation = buferData[i].rotation;
+                    float3 size = buferData[i].size;
+                    float3 color = buferData[i].color;
 
                     float currentDistance = length(currentPosition - position) - size.x / 2.0;
                     clocestData = smin(clocestData.w, currentDistance, clocestData.rgb, color);
@@ -123,8 +148,20 @@ Shader "Unlit/RayMarching"
                 return float4(ClosestAtAll.rgb, total_distance_traveled);
             }
 
+            void gatherData(){
+                 for(int i = 0; i < MAX_NUMBER_OF_SPHERES; i++){
+                    buferData[i].position = tex2D(_BufferData, float2(0 / WIDTH, i / HEIGHT)).xyz;
+                    buferData[i].rotation = tex2D(_BufferData, float2(1 / WIDTH, i / HEIGHT)).xyz;
+                    buferData[i].size = tex2D(_BufferData, float2(2 / WIDTH, i / HEIGHT)).xyz;
+                    buferData[i].color = tex2D(_BufferData, float2(3 / WIDTH, i / HEIGHT)).rgba;
+                }
+            }
+
             fragOut frag (v2f i)
             {
+                // get data from texture buffer once
+                gatherData();
+
                 // init ray
                 float2 uv = i.screenPos.xy / i.screenPos.w * 2.0 - 1.0;
                 float3 ro = mul(CameraToWorld, float4(0,0,0,1)).xyz;
