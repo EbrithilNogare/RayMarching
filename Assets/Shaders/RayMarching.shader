@@ -68,12 +68,12 @@ Shader "Unlit/RayMarching"
             static const int NUMBER_OF_STEPS = 32;
             #endif
             #ifdef _STEPS_GOOD
-            static const int NUMBER_OF_STEPS = 128;
+            static const int NUMBER_OF_STEPS = 64;
             #endif
             #ifdef _STEPS_BEST
-            static const int NUMBER_OF_STEPS = 512;
+            static const int NUMBER_OF_STEPS = 128;
             #endif
-            static const int MAX_NUMBER_OF_SPHERES = 5;
+            static const int MAX_NUMBER_OF_SPHERES = 8;
             static const float WIDTH = 4;
             static const float HEIGHT = 16;
             static const float MINIMUM_HIT_DISTANCE = 0.001;

@@ -16,7 +16,6 @@ public class RayMarchingRenderer : MonoBehaviour
     private void Start()
     {
         spheres = new List<Sphere>();
-
         FillBuffer();
     }
 
