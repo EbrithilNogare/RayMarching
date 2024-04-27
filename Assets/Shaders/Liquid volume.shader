@@ -1,4 +1,4 @@
-Shader "Unlit/tmp"
+Shader "Unlit/LiquidVolume"
 {
     Properties {
         _Absorption("Absorption", Range(0, .2)) = .01
