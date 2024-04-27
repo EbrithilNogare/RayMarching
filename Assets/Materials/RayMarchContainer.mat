@@ -12,7 +12,7 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _STEPS_FAST
+  - _STEPS_NORMAL
   m_InvalidKeywords:
   - FAST
   - FAST_ON
