@@ -149,7 +149,8 @@ Shader "Unlit/RayMarching"
             }
 
             void gatherData(){
-                 for(int i = 0; i < MAX_NUMBER_OF_SPHERES; i++){
+                [unroll]
+                for(int i = 0; i < MAX_NUMBER_OF_SPHERES; i++){
                     buferData[i].position = tex2D(_BufferData, float2(0 / WIDTH, i / HEIGHT)).xyz;
                     buferData[i].rotation = tex2D(_BufferData, float2(1 / WIDTH, i / HEIGHT)).xyz;
                     buferData[i].size = tex2D(_BufferData, float2(2 / WIDTH, i / HEIGHT)).xyz;
