@@ -11,7 +11,9 @@ public class CameraController : MonoBehaviour
 
     private void Awake()
     {
+#if UNITY_ANDROID
         Application.targetFrameRate = 240;
+#endif
     }
 
     void Update()
