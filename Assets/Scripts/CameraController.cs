@@ -9,6 +9,11 @@ public class CameraController : MonoBehaviour
     private Vector2 lookInput;
     private Vector2 moveInput;
 
+    private void Awake()
+    {
+        Application.targetFrameRate = 240;
+    }
+
     void Update()
     {
         RotateCamera();
