@@ -51,6 +51,13 @@ jobs:
 
       - if: matrix.targetPlatform == 'Android' || matrix.targetPlatform == 'StandaloneOSX'
         uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          android: true         # ~ 8.7 GiB
+          dotnet: true          # ~ 1.6 GiB
+          haskell: true         # ~ 5.2 GiB
+          large-packages: true  # ~ 4,7 GiB
+          docker-images: true   # ~ 3.2 GiB
+          swap-storage: true    # ~ 4.0 GiB
 
       - uses: game-ci/unity-builder@v4
         id: myBuildStep
