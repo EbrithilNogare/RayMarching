@@ -70,9 +70,8 @@ jobs:
           versioning: Semantic
           targetPlatform: ${{ matrix.targetPlatform }}
 
-      - name: Get disk space left
-        if: matrix.targetPlatform == 'Android' || matrix.targetPlatform == 'StandaloneOSX'
-        run: echo $(df -a $1 | awk 'NR > 1 {avail+=$4} END {print avail/1024/1024 " GiB"}');
+      - name: Get disk space usage
+        run: df -ah /
         
       - name: Remove DoNotShip folder
         run: sudo find ./build/${{ matrix.targetPlatform }} -maxdepth 1 -type d -name "*DoNotShip*" -exec rm -rf {} +
